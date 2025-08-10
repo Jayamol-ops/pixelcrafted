@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelCrafted - Minimalist Dark Theme</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=serif:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'sans-serif;', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            color: #e0e0e0;
+        }
+        
+        .heading-font {
+            font-family: 'sans-serif;', sans-serif;
+        }
+        
+        .page-transition {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .page-transition.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .project-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .project-image {
+            background: linear-gradient(45deg, #2d3748, #4a5568);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .project-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .project-card:hover .project-image::before {
+            left: 100%;
+        }
+        
+        .filter-btn {
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            border-color: transparent;
+            transform: translateY(-2px);
+        }
+        
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .lightbox.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-slide-up {
+            animation: slideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .shop-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+        }
+        
+        .shop-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
+        }
+        
+        .section-enter {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        
+        .section-enter.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+    </style>
+</head>
+<body class="bg-gray-900" font-family: 'sans-serif;'>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-black bg-opacity-80 backdrop-blur-md z-50 border-b border-gray-800">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="text-2xl font-bold heading-font">
+                    <span class="bg-gradient-to-r from-red-400 to-teal-400 bg-clip-text">pixelcrafted</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link active text-gray-300 hover:text-white">Home</a>
+                    <a href="#projects" class="nav-link text-gray-300 hover:text-white">Projects</a>
+                    <a href="#shop" class="nav-link text-gray-300 hover:text-white">Shop</a>
+                    <a href="#about" class="nav-link text-gray-300 hover:text-white">About</a>
+                    <a href="#contact" class="nav-link text-gray-300 hover:text-white">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black bg-opacity-95 backdrop-blur-md">
+            <div class="px-6 py-4 space-y-4">
+                <a href="#home" class="block nav-link text-gray-300 hover:text-white">Home</a>
+                <a href="#projects" class="block nav-link text-gray-300 hover:text-white">Projects</a>
+                <a href="#shop" class="block nav-link text-gray-300 hover:text-white">Shop</a>
+                <a href="#about" class="block nav-link text-gray-300 hover:text-white">About</a>
+                <a href="#contact" class="block nav-link text-gray-300 hover:text-white">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="page-section min-h-screen flex items-center justify-center pt-20">
+        <div class="container mx-auto px-6 text-center">
+            <div class="animate-slide-up">
+                <h1 class="text-6xl md:text-8xl font-light heading-font mb-6">
+                    <span class="bg-gradient-to-r from-red-400 to-teal-400 bg-clip-text">PixelCrafted</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-400 mb-8 max-w-3xl mx-auto">
+                    Carefully Crafted with pixels
+                </p>
+                <a href="#projects">
+                <button class="btn-primary px-8 py-4 rounded-full text-white font-medium hover:shadow-lg transition-all duration-300" >
+                    Explore My Works <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="page-section py-20 section-enter">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl md:text-6xl heading-font mb-6 bg-gradient-to-r from-red-400 to-teal-400 bg-clip-text text-transparent">
+                    Projects
+                </h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+                    Carefully Crafted with Pixels
+                </p>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex justify-center mb-12">
+                <div class="flex flex-wrap gap-4">
+                    <button class="filter-btn active px-6 py-3 rounded-full text-white font-medium" data-filter="all">
+                        All Projects
+                    </button>
+                    <button class="filter-btn px-6 py-3 rounded-full text-gray-300 font-medium" data-filter="artworks">
+                        Artworks
+                    </button>
+                    <button class="filter-btn px-6 py-3 rounded-full text-gray-300 font-medium" data-filter="uiux">
+                        UI/UX Design
+                    </button>
+                    <button class="filter-btn px-6 py-3 rounded-full text-gray-300 font-medium" data-filter="motion">
+                        Motion Design
+                    </button>
+                </div>
+            </div>
+
+            <!-- Projects Grid -->
+            <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Artwork Projects -->
+                <div class="project-card rounded-2xl overflow-hidden" data-category="artworks">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-palette text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Abstract Expressions</h3>
+                        <p class="text-gray-400 mb-4">Digital artwork exploring color theory and emotional expression</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Artwork</span>
+                            <button class="lightbox-trigger text-teal-400 hover:text-teal-300" data-title="Abstract Expressions">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card rounded-2xl overflow-hidden" data-category="artworks">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-brush text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Portrait Series</h3>
+                        <p class="text-gray-400 mb-4">Contemporary portrait studies with mixed media techniques</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Artwork</span>
+                            <button class="lightbox-trigger text-teal-400 hover:text-teal-300" data-title="Portrait Series">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card rounded-2xl overflow-hidden" data-category="artworks">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-image text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Nature Studies</h3>
+                        <p class="text-gray-400 mb-4">Botanical illustrations and landscape compositions</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Artwork</span>
+                            <button class="lightbox-trigger text-teal-400 hover:text-teal-300" data-title="Nature Studies">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UI/UX Projects -->
+                <div class="project-card rounded-2xl overflow-hidden" data-category="uiux">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-mobile-alt text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">FinTech Mobile App</h3>
+                        <p class="text-gray-400 mb-4">Complete UX redesign for a financial services application</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">UI/UX</span>
+                            <button class="lightbox-trigger text-teal-400 hover:text-teal-300" data-title="FinTech Mobile App">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card rounded-2xl overflow-hidden" data-category="uiux">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-desktop text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">E-commerce Platform</h3>
+                        <p class="text-gray-400 mb-4">Modern dashboard design with advanced analytics integration</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">UI/UX</span>
+                            <button class="lightbox-trigger text-teal-400 hover:text-teal-300" data-title="E-commerce Platform">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card rounded-2xl overflow-hidden" data-category="uiux">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-globe text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Travel Booking Website</h3>
+                        <p class="text-gray-400 mb-4">Responsive web design with interactive booking flow</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">UI/UX</span>
+                            <button class="lightbox-trigger text-teal-400 hover:text-teal-300" data-title="Travel Booking Website">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Motion Design Projects -->
+                <div class="project-card rounded-2xl overflow-hidden" data-category="motion">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-play-circle text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Brand Animation</h3>
+                        <p class="text-gray-400 mb-4">Logo animation and brand identity motion graphics</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Motion</span>
+                            <button class="lightbox-trigger text-teal-400 hover:text-teal-300" data-title="Brand Animation">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card rounded-2xl overflow-hidden" data-category="motion">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-film text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Product Showcase</h3>
+                        <p class="text-gray-400 mb-4">3D product animation with cinematic lighting</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Motion</span>
+                            <button class="lightbox-trigger text-teal-400 hover:text-teal-300" data-title="Product Showcase">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card rounded-2xl overflow-hidden" data-category="motion">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-video text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">UI Transitions</h3>
+                        <p class="text-gray-400 mb-4">Smooth micro-interactions for mobile applications</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Motion</span>
+                            <button class="lightbox-trigger text-teal-400 hover:text-teal-300" data-title="UI Transitions">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop Section -->
+    <section id="shop" class="page-section py-20 section-enter">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl md:text-6xl heading-font mb-6 bg-gradient-to-r from-red-400 to-teal-400 bg-clip-text text-transparent">
+                    Shop
+                </h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+                    Acquire original artworks and limited edition prints from my collection.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="shop-item rounded-2xl overflow-hidden">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-palette text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Abstract Composition #1</h3>
+                        <p class="text-gray-400 mb-4">Original digital artwork, limited edition print</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-2xl font-bold text-white">$299</span>
+                            <span class="text-sm text-gray-500">24" x 36"</span>
+                        </div>
+                        <button class="w-full btn-primary py-3 rounded-lg text-white font-medium">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <div class="shop-item rounded-2xl overflow-hidden">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-brush text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Portrait Study #3</h3>
+                        <p class="text-gray-400 mb-4">Mixed media on canvas, original piece</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-2xl font-bold text-white">$750</span>
+                            <span class="text-sm text-gray-500">18" x 24"</span>
+                        </div>
+                        <button class="w-full btn-primary py-3 rounded-lg text-white font-medium">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <div class="shop-item rounded-2xl overflow-hidden">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-image text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Botanical Series</h3>
+                        <p class="text-gray-400 mb-4">Set of 4 prints, professionally framed</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-2xl font-bold text-white">$450</span>
+                            <span class="text-sm text-gray-500">12" x 16" each</span>
+                        </div>
+                        <button class="w-full btn-primary py-3 rounded-lg text-white font-medium">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <div class="shop-item rounded-2xl overflow-hidden">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-star text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Cosmic Dreams</h3>
+                        <p class="text-gray-400 mb-4">Digital artwork on metallic paper</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-2xl font-bold text-white">$199</span>
+                            <span class="text-sm text-gray-500">20" x 30"</span>
+                        </div>
+                        <button class="w-full btn-primary py-3 rounded-lg text-white font-medium">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <div class="shop-item rounded-2xl overflow-hidden">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-mountain text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Mountain Landscapes</h3>
+                        <p class="text-gray-400 mb-4">Acrylic on canvas, original artwork</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-2xl font-bold text-white">$650</span>
+                            <span class="text-sm text-gray-500">30" x 40"</span>
+                        </div>
+                        <button class="w-full btn-primary py-3 rounded-lg text-white font-medium">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <div class="shop-item rounded-2xl overflow-hidden">
+                    <div class="project-image h-64 relative flex items-center justify-center">
+                        <i class="fas fa-heart text-6xl text-gray-600"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Emotion Series</h3>
+                        <p class="text-gray-400 mb-4">Collection of 6 abstract pieces</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-2xl font-bold text-white">$899</span>
+                            <span class="text-sm text-gray-500">Various sizes</span>
+                        </div>
+                        <button class="w-full btn-primary py-3 rounded-lg text-white font-medium">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="page-section py-20 section-enter">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-5xl md:text-6xl heading-font mb-6 bg-gradient-to-r from-red-400 to-teal-400 bg-clip-text text-transparent">
+                        About Me
+                    </h2>
+                    <p class="text-xl text-gray-300 mb-6 leading-relaxed">
+                        I'm a multidisciplinary creative professional passionate about visual storytelling and innovative design solutions. With expertise spanning artworks, UI/UX design, and motion graphics, I craft experiences that resonate emotionally while serving functional purposes.
+                    </p>
+                    <p class="text-lg text-gray-400 mb-8 leading-relaxed">
+                        My approach combines traditional artistic principles with cutting-edge digital techniques, resulting in work that bridges the gap between art and technology. Every project is an opportunity to push creative boundaries and explore new possibilities.
+                    </p>
+                    <div class="flex space-x-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white">50+</div>
+                            <div class="text-gray-400">Projects</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white">5+</div>
+                            <div class="text-gray-400">Years</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white">30+</div>
+                            <div class="text-gray-400">Clients</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="w-full h-96 bg-gradient-to-br from-red-400 to-teal-400 rounded-2xl opacity-20"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <i class="fas fa-user text-8xl text-gray-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="page-section py-20 section-enter">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl md:text-6xl heading-font mb-6 bg-gradient-to-r from-red-400 to-teal-400 bg-clip-text text-transparent">
+                    Contact
+                </h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+                    Ready to bring your vision to life? Let's discuss your next creative project.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 text-white">Get in Touch</h3>
+                    <div class="space-y-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-red-400 to-teal-400 rounded-full flex items-center justify-center">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <div class="text-gray-400">Email</div>
+                                <div class="text-white">hello@portfolio.com</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-red-400 to-teal-400 rounded-full flex items-center justify-center">
+                                <i class="fas fa-phone text-white"></i>
+                            </div>
+                            <div>
+                                <div class="text-gray-400">Phone</div>
+                                <div class="text-white">+1 (555) 123-4567</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-red-400 to-teal-400 rounded-full flex items-center justify-center">
+                                <i class="fas fa-map-marker-alt text-white"></i>
+                            </div>
+                            <div>
+                                <div class="text-gray-400">Location</div>
+                                <div class="text-white">New York, NY</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h4 class="text-lg font-semibold mb-4 text-white">Follow Me</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gradient-to-r hover:from-red-400 hover:to-teal-400 transition-all duration-300">
+                                <i class="fab fa-instagram text-gray-300"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gradient-to-r hover:from-red-400 hover:to-teal-400 transition-all duration-300">
+                                <i class="fab fa-dribbble text-gray-300"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gradient-to-r hover:from-red-400 hover:to-teal-400 transition-all duration-300">
+                                <i class="fab fa-behance text-gray-300"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gradient-to-r hover:from-red-400 hover:to-teal-400 transition-all duration-300">
+                                <i class="fab fa-linkedin text-gray-300"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <form class="space-y-6">
+                        <div>
+                            <input type="text" placeholder="Your Name" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-teal-400 focus:outline-none transition-colors duration-300">
+                        </div>
+                        <div>
+                            <input type="email" placeholder="Your Email" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-teal-400 focus:outline-none transition-colors duration-300">
+                        </div>
+                        <div>
+                            <input type="text" placeholder="Subject" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-teal-400 focus:outline-none transition-colors duration-300">
+                        </div>
+                        <div>
+                            <textarea placeholder="Your Message" rows="5" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-teal-400 focus:outline-none transition-colors duration-300 resize-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full btn-primary py-3 rounded-lg text-white font-medium">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <div class="relative max-w-4xl mx-4">
+            <button id="close-lightbox" class="absolute -top-4 -right-4 w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all duration-300">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="bg-gray-900 rounded-2xl p-8">
+                <h3 id="lightbox-title" class="text-2xl font-semibold mb-4 text-white heading-font"></h3>
+                <div class="w-full h-96 bg-gradient-to-br from-gray-800 to-gray-700 rounded-lg mb-6 flex items-center justify-center">
+                    <i class="fas fa-image text-6xl text-gray-600"></i>
+                </div>
+                <p class="text-gray-400 leading-relaxed">
+                    This is a detailed view of the selected project. In a real implementation, this would show high-resolution images, project details, technologies used, and additional context about the creative process and outcomes.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-black bg-opacity-50 py-12 border-t border-gray-800">
+        <div class="container mx-auto px-6 text-center">
+            <div class="text-2xl font-bold heading-font mb-4">
+                <span class="bg-gradient-to-r from-red-400 to-teal-400 bg-clip-text text-transparent">Portfolio</span>
+            </div>
+            <p class="text-gray-400 mb-6">© 2024 Creative Portfolio. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">Privacy Policy</a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">Terms of Service</a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">Cookie Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Navigation link activation
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.page-section');
+
+            function updateActiveNav() {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (window.scrollY >= (sectionTop - 200)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            // Smooth scroll for navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    
+                    window.scrollTo({
+                        top: targetSection.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            window.addEventListener('scroll', updateActiveNav);
+            updateActiveNav(); // Call on page load
+
+            // Project filtering
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const projectCards = document.querySelectorAll('.project-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Update active filter button
+                    filterBtns.forEach(b => {
+                        b.classList.remove('active');
+                        b.classList.add('text-gray-300');
+                    });
+                    this.classList.add('active');
+                    this.classList.remove('text-gray-300');
+
+                    const filter = this.getAttribute('data-filter');
+
+                    // Animate cards out
+                    projectCards.forEach(card => {
+                        card.style.transform = 'translateY(20px)';
+                        card.style.opacity = '0';
+                    });
+
+                    // Filter and animate cards in
+                    setTimeout(() => {
+                        projectCards.forEach(card => {
+                            if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                                card.style.display = 'block';
+                                setTimeout(() => {
+                                    card.style.transform = 'translateY(0)';
+                                    card.style.opacity = '1';
+                                }, 100);
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                    }, 300);
+                });
+            });
+
+            // Lightbox functionality
+            const lightbox = document.getElementById('lightbox');
+            const lightboxTitle = document.getElementById('lightbox-title');
+            const closeLightbox = document.getElementById('close-lightbox');
+            const lightboxTriggers = document.querySelectorAll('.lightbox-trigger');
+
+            lightboxTriggers.forEach(trigger => {
+                trigger.addEventListener('click', function() {
+                    const title = this.getAttribute('data-title');
+                    lightboxTitle.textContent = title;
+                    lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            closeLightbox.addEventListener('click', function() {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === lightbox) {
+                    lightbox.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+
+            // Section entrance animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.section-enter').forEach(section => {
+                observer.observe(section);
+            });
+
+            // Parallax effect for hero section
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const homeSection = document.getElementById('home');
+                if (homeSection) {
+                    homeSection.style.transform = `translateY(${scrolled * 0.5}px)`;
+                }
+            });
+
+            // Add loading animation
+            window.addEventListener('load', function() {
+                document.body.classList.add('loaded');
+                
+                // Animate hero section
+                const heroContent = document.querySelector('#home .animate-slide-up');
+                if (heroContent) {
+                    heroContent.style.opacity = '1';
+                    heroContent.style.transform = 'translateY(0)';
+                }
+            });
+
+            // Form submission
+            document.querySelector('form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Simple form validation and submission feedback
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                
+                submitBtn.textContent = 'Sending...';
+                submitBtn.disabled = true;
+                
+                // Simulate form submission
+                setTimeout(() => {
+                    submitBtn.textContent = 'Message Sent!';
+                    setTimeout(() => {
+                        submitBtn.textContent = originalText;
+                        submitBtn.disabled = false;
+                        this.reset();
+                    }, 2000);
+                }, 1000);
+            });
+
+            // Add scroll indicator
+            const scrollIndicator = document.createElement('div');
+            scrollIndicator.className = 'fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-red-400 to-teal-400 z-50';
+            scrollIndicator.style.transform = 'scaleX(0)';
+            scrollIndicator.style.transformOrigin = 'left';
+            scrollIndicator.style.transition = 'transform 0.1s ease';
+            document.body.appendChild(scrollIndicator);
+
+            window.addEventListener('scroll', function() {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height);
+                scrollIndicator.style.transform = `scaleX(${scrolled})`;
+            });
+        });
+    </script>
+</body>
+</html>
